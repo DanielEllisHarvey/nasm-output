@@ -6,41 +6,41 @@ main:
 	mov rbx, 1		; always stdout
 	mov rdx, 1		; always byte
 @a:
-	mov r8, 64			; r8, number of loops
+	mov r8, 64		; r8, number of loops
 	mov r9, 1 << 63		; r9, bit mask
 	mov r10, r12		; r10, 64-bit number
 
 @s1:
-	mov r11, 0x30
-	mov rax, r10	; copy r10 to rax
+	mov r11, 0x30		; 0x30 = "0"
+	mov rax, r10		; copy r10 to rax
 	and rax, r9		; check individual bit
 	jz @0
-	inc r11
+	inc r11			; 0x31 = "1"
 @0:
-	mov qword [buf], r11
+	mov qword [buf], r11	; add to output buffer
 
-	mov rax, 4
-	mov rcx, buf
-	int 0x80
-
-	shr r9, 1	; shift r9 right by 1
-	dec r8		; decrement r8
-	jnz @s1		; if not 0, jump to @s1
-
-	mov byte [buf], 0xa
 	mov rax, 4		; sys_write
-	mov rcx, buf	; endl
-	int 0x80		; syscall
+	mov rcx, buf		; buffer
+	int 0x80		; interrupt
+
+	shr r9, 1		; shift r9 right by 1
+	dec r8			; decrement r8
+	jnz @s1			; if not 0, jump to @s1
+
+	mov byte [buf], 0xa	; 0xa = "\n"
+	mov rax, 4		; sys_write
+	mov rcx, buf		; endl
+	int 0x80		; interrupt
 
 @after:
 	dec r12
-	jnz @a
+	jnz @a			; back to start
 
 	mov rax, 1		; sys_exit
-	xor rbx, rbx	; status 0
+	xor rbx, rbx		; status 0
 	int 0x80		; syscall
 
 section .data
-	maxn dd 19000
+	maxn dd 19000		; starting value
 section .bss
-	buf	resb 1
+	buf	resb 1		; single byte buffer
