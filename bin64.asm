@@ -1,46 +1,35 @@
 section .text
 	global main
-
 main:
-	mov r12, [maxn]
-	mov rbx, 1		; always stdout
-	mov rdx, 1		; always byte
-@a:
-	mov r8, 64		; r8, number of loops
-	mov r9, 1 << 63		; r9, bit mask
-	mov r10, r12		; r10, 64-bit number
-
+	xor r12, [maxn]
+	xor r11, r12		; copy r12 into r11
+	xor byte [buf + 0x41], 0xa	; 0xa = "\n"
+@s0:
+	mov rbx, 64		; number of loops
+	mov r10, r11		; r10, 64-bit number
+	sub r10, r12
 @s1:
-	mov r11, 0x30		; 0x30 = "0"
+	mov rdx, 0x30		; 0x30 = "0"
 	mov rax, r10		; copy r10 to rax
-	and rax, r9		; check individual bit
-	jz @0
-	inc r11			; 0x31 = "1"
-@0:
-	mov qword [buf], r11	; add to output buffer
-
-	mov rax, 4		; sys_write
-	mov rcx, buf		; buffer
-	int 0x80		; interrupt
-
-	shr r9, 1		; shift r9 right by 1
-	dec r8			; decrement r8
+	and rax, 1		; check individual bit
+	xor rdx, rax		; 0x31 = "1"
+	mov byte [buf + rbx], dl	; dl is last 8 bits of rdx
+	dec rbx
+	shr r10, 1		; shift r9 right by 1
 	jnz @s1			; if not 0, jump to @s1
-
-	mov byte [buf], 0xa	; 0xa = "\n"
-	mov rax, 4		; sys_write
-	mov rcx, buf		; endl
-	int 0x80		; interrupt
-
 @after:
 	dec r12
-	jnz @a			; back to start
+	jnz @s0			; back to start
 
-	mov rax, 1		; sys_exit
-	xor rbx, rbx		; status 0
+	mov rax, 4
+	mov rbx, 0
+	mov rcx, buf
+	mov rdx, 0x42
+	int 0x80
+
+	xor rax, 0x43		; sys_exit
 	int 0x80		; syscall
-
 section .data
-	maxn dd 19000		; starting value
+	maxn dq 1000000		; starting value (benchmark reasons)
 section .bss
-	buf	resb 1		; single byte buffer
+	buf	resb 65		; 65 byte buffer
