@@ -19,7 +19,7 @@ main:
     	add rdx, 7          ; 0x41 = "A"
 @s2:
 	mov byte [buf + rbx], dl	; dl is last 8 bits of rdx
-    dec rbx
+    	dec rbx
 	shr r10, 4		; shift rcx right by 4
 	jnz @s1			; if not 0, jump to @s1
 @after:
