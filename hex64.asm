@@ -11,7 +11,6 @@ main:
 @s1:
 	mov rax, r10		; copy r10 to rax
 	and rax, 0xf		; check individual bits
-@ns:
     	mov rdx, 0x30	    ; 0x30 = "0"
     	add rdx, rax        ; 0x30 - 0x39, 0x41 - 0x46
     	cmp rax, 9
