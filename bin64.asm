@@ -6,11 +6,12 @@ main:
 @s0:
 	mov rbx, 64			; number of loops
 	mov r10, r12		; r10, 64-bit number being converted
+	mov rdx, 0x30
 @s1:
 	mov rax, r10		; rax, single bit value
-	mov rdx, 0x30		; 0x30 = "0"
+	and rdx, 0x30		; 0x30 = "0"
 	and rax, 0x1		; check individual bit
-	xor rdx, rax		; 0x31 = "1"
+	or rdx, rax			; 0x31 = "1"
 	mov byte [buf + rbx], dl	; dl is last 8 bits of rdx
 	dec rbx				; move value index
 	shr r10, 1			; shift by 1 to next value
