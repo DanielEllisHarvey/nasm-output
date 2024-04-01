@@ -1,5 +1,5 @@
 section .text
-    	global main
+	global main
 main:
 	xor r12, [maxn]
 	xor byte [buf + 17], 0xa	; 0xa = "\n"
@@ -9,11 +9,16 @@ main:
 @s1:
 	mov rax, r10		; rax, single hex value
 	and rax, 0xf		; check individual bits
+	cmp rax, 9
+	jg @a
 	mov rdx, 0x30		; 0x30 = "0"
-	add rdx, rax		; 0x30 - 0x39, 0x41 - 0x46
-	cmp rax, 10
-	jl @s2
-    add rdx, 7			; 0x41 = "A"
+	or rdx, rax			; 0x30 - 0x39, 0x41 - 0x46
+	jmp @s2
+@a:
+	mov rdx, 0x40		; 0x41 = "A"
+	and rax, 0x7		; -8
+	dec rax				; -1
+	or rdx, rax			; 0x40 + rax
 @s2:
 	mov byte [buf + rbx], dl	; dl is last 8 bits of rdx
 	dec rbx				; move value index
@@ -23,10 +28,9 @@ main:
 	mov byte [buf + rbx], 0x0	; replace unused bytes with 0x0
 	dec rbx
 	jnz @s3
-
 	dec r12
 	jnz @s0				; back to start
-	mov rax, 4			; output value
+	mov rax, 4			; sys_write
 	xor rbx, rbx
 	mov rcx, buf
 	mov rdx, 0x12
