@@ -18,3 +18,8 @@ ld bin64.o -o bin64
 ./bin64
 ```
 This code is specific to Linux
+
+## Speed
+On my PC (82KQ IdeaPad 3 14ADA6, AMD Ryzen 3 3250U with Radeon Graphics (4) @ 2.600GHz, Arch Linux)
+- Hex64: 14ms/1M Avg. conversions
+- Bin64: 15ms/1M Avg. conversions
