@@ -16,11 +16,13 @@ main:
 	dec rbx				; move value index
 	shr r10, 1			; shift by 1 to next value
 	jnz @s1
+	cmp byte [buf + rbx], 0x0
+	je @s4
 @s3:
 	mov byte [buf + rbx], 0x0	; replace unused bytes with 0x0
 	dec rbx
 	jnz @s3
-
+@s4:
 	dec r12
 	jnz @s0				; back to start
 	mov rax, 4			; output value
